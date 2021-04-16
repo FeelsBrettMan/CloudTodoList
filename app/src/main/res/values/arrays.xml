@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="test_list">
+        <item>Wash the dog</item>
+        <item>Dry the dog</item>
+        <item>Pet the dog</item>
+        <item>Buy the DOGE</item>
+        <item>Send the DOGE to the moon</item>
+    </string-array>
+    <integer-array name="isChecked">
+        <item>1</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+    </integer-array>
+</resources>
