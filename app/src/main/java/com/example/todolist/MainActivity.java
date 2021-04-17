@@ -1,36 +1,35 @@
 package com.example.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnAuthenticatedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-        
-
     }
 
     public void onMyListClick(View view){
-        Intent switchActivity = new Intent(MainActivity.this, ListSelect.class);
+        Intent switchActivity = new Intent(MainActivity.this, todoList.class);
         MainActivity.this.startActivity(switchActivity);
     }
 
+    public void signInClick(View view){
+        FireBaseSetUp.getInstance().authenticate(this,this);
+    }
+    public void logIt(View view){
+        FireBaseSetUp.getInstance().getList();
+    }
 
 
+    @Override
+    public void onAuthenticated(boolean success, String message) {
+        Log.d("myAUTH", "onAuthenticated: " + success);
+    }
 }

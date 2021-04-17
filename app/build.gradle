@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
 }
-apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
@@ -49,3 +48,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore'
 
 }
+
+apply plugin: 'com.google.gms.google-services'
