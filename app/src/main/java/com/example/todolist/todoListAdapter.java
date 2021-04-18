@@ -5,19 +5,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.Checkable;
 import android.widget.TextView;
-
-import java.lang.reflect.Constructor;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
+public class todoListAdapter extends RecyclerView.Adapter<todoListAdapter.ListViewHolder> {
     Context context;
     String[] data;
     boolean[] isChecked;
-    public ListAdapter(Context context, String[] data, boolean[] isChecked){
+    public todoListAdapter(Context context, String[] data, boolean[] isChecked){
         this.context = context;
         this.data= data;
         this.isChecked = isChecked;
@@ -49,7 +46,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
         public ListViewHolder(@NonNull View itemView) {
             super(itemView);
-            textTodo = itemView.findViewById(R.id.textTodo);
+            textTodo = itemView.findViewById(R.id.textItemName);
             checkBox = itemView.findViewById(R.id.checkBox);
         }
     }

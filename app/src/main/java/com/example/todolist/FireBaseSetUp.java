@@ -15,6 +15,9 @@ public class FireBaseSetUp {
     public interface OnAuthenticatedListener{
         void onAuthenticated(boolean success, String message);
     }
+    public interface nestedCallback{
+        void getNested(List<String> nested);
+    }
 
     private static FireBaseSetUp instance;
     private FirebaseUser user;
@@ -44,7 +47,7 @@ public class FireBaseSetUp {
         }
     }
 
-    public void getList(){
+    public void getList(Activity activity, final nestedCallback listener){
 /*        db.collection("listIDs").get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 List<String> users = (List<String>) task.getResult().getDocuments().get(0).get("Users");
@@ -55,12 +58,16 @@ public class FireBaseSetUp {
                 });
             }
         });*/
+        List<String> retval;
         db.collection("listIDs").document("sVNtz4WnhWbba6Xaetrl").get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 List<String> nested = (List<String>) task.getResult().get("nested");
-                db.collection("listIDs").document("sVNtz4WnhWbba6Xaetrl").collection(nested.get(0)).get().addOnCompleteListener(task1 -> {
+                listener.getNested(nested);
+
+
+/*                db.collection("listIDs").document("sVNtz4WnhWbba6Xaetrl").collection(nested.get(0)).get().addOnCompleteListener(task1 -> {
                     Log.d(TAG, "getList: "+ task1.getResult().getDocuments());
-                });
+                });*/
             }
         });
 

@@ -14,15 +14,15 @@ public class todoList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list);
 
-        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.todoListRecyclerView);
         String[] testStrings = getResources().getStringArray(R.array.test_list);
         int[] testTypedArray = getResources().getIntArray(R.array.isChecked);
         boolean[] testParse =  new boolean[testTypedArray.length];
         for(int i =0; i<testTypedArray.length;i++) {
             testParse[i] = (testTypedArray[i] != 0);
         }
-        ListAdapter listAdapter = new ListAdapter( this, testStrings,testParse);
-        recyclerView.setAdapter(listAdapter);
+        todoListAdapter todoListAdapter = new todoListAdapter( this, testStrings,testParse);
+        recyclerView.setAdapter(todoListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 }

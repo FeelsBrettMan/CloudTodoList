@@ -22,9 +22,11 @@ public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnA
 
     public void signInClick(View view){
         FireBaseSetUp.getInstance().authenticate(this,this);
+        Intent switchActivity = new Intent(MainActivity.this, ListSelect.class);
+        MainActivity.this.startActivity(switchActivity);
     }
     public void logIt(View view){
-        FireBaseSetUp.getInstance().getList();
+        FireBaseSetUp.getInstance().authenticate(this,this);
     }
 
 
