@@ -11,17 +11,24 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 public class FireBaseSetUp {
-    private final String TAG = "FBSU";
+    private static final String TAG = "FBSU";
     public interface OnAuthenticatedListener{
         void onAuthenticated(boolean success, String message);
     }
     public interface nestedCallback{
-        void getNested(List<String> nested);
+        void getNested(String nested, String parentDoc);
+    }
+    public interface todoCallback{
+        void getElements(String itemName, Boolean isDone);
     }
 
     private static FireBaseSetUp instance;
     private FirebaseUser user;
     private FirebaseFirestore db;
+
+    private static String currentDoc;
+    private static String currentListName;
+
 
     public static synchronized FireBaseSetUp getInstance(){
         if(instance == null){
@@ -47,30 +54,52 @@ public class FireBaseSetUp {
         }
     }
 
-    public void getList(Activity activity, final nestedCallback listener){
-/*        db.collection("listIDs").get().addOnCompleteListener(task -> {
+    public void getListSelect(Activity activity, final nestedCallback listener, ListSelect callingClass){
+        db.collection("listIDs").get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
-                List<String> users = (List<String>) task.getResult().getDocuments().get(0).get("Users");
-                users.forEach(current ->{
-                    if(user.getUid().equals(current)){
-                        db.collection("listIDs").document("sVNtz4WnhWbba6Xaetrl").get();
-                    }
+                List<DocumentSnapshot> docs = task.getResult().getDocuments();
+                docs.forEach(currentDoc->{
+                    List<String> userIDs = (List<String>) currentDoc.get("Users");
+                    userIDs.forEach(currentUserID->{
+                        if(user.getUid().equals(currentUserID)){
+                            String nestedListName = currentDoc.getString("nested");
+                            Log.d(TAG, "getList: "+ currentDoc.getId());
+                            listener.getNested(nestedListName, currentDoc.getId());
+                        }
+                    });
                 });
-            }
-        });*/
-        List<String> retval;
-        db.collection("listIDs").document("sVNtz4WnhWbba6Xaetrl").get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
-                List<String> nested = (List<String>) task.getResult().get("nested");
-                listener.getNested(nested);
-
-
-/*                db.collection("listIDs").document("sVNtz4WnhWbba6Xaetrl").collection(nested.get(0)).get().addOnCompleteListener(task1 -> {
-                    Log.d(TAG, "getList: "+ task1.getResult().getDocuments());
-                });*/
+                callingClass.setRecyclerViewContent();
             }
         });
+    }
 
+    public static synchronized void setCurrents(String doc, String listName){
+        Log.d(TAG, "setCurrents: "+ listName +" : "+ doc);
+        currentDoc = doc;
+        currentListName = listName;
+    }
+
+    public void getTodoList(final todoCallback listener, todoList callingClass){
+        Log.d(TAG, "getTodoList: " + currentDoc + currentListName);
+        if(currentDoc==null){
+            Log.d(TAG, "getTodoList: currentDoc is null");
+            return;
+        }
+        db.collection("listIDs").document(currentDoc).collection(currentListName).get().addOnCompleteListener(task -> {
+           if(task.isSuccessful()){
+
+               List<DocumentSnapshot> docs = task.getResult().getDocuments();
+               docs.forEach(current ->{
+                   Log.d(TAG, "getTodoList: " + current.getString("itemName"));
+                   Log.d(TAG, "getTodoList: "+ current.getBoolean("isDone"));
+                   listener.getElements(current.getString("itemName"), current.getBoolean("isDone"));
+               });
+               callingClass.setRecyclerViewContent();
+           }
+           else {
+               Log.d(TAG, "getTodoList: FAILED!");
+           }
+        });
     }
 }
 

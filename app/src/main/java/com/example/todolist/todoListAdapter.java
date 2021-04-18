@@ -7,14 +7,16 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class todoListAdapter extends RecyclerView.Adapter<todoListAdapter.ListViewHolder> {
     Context context;
-    String[] data;
-    boolean[] isChecked;
-    public todoListAdapter(Context context, String[] data, boolean[] isChecked){
+    List<String> data;
+    List<Boolean> isChecked;
+    public todoListAdapter(Context context, List<String > data, List<Boolean> isChecked){
         this.context = context;
         this.data= data;
         this.isChecked = isChecked;
@@ -31,13 +33,13 @@ public class todoListAdapter extends RecyclerView.Adapter<todoListAdapter.ListVi
 
     @Override
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
-        holder.textTodo.setText(data[position]);
-        holder.checkBox.setChecked(isChecked[position]);
+        holder.textTodo.setText(data.get(position));
+        holder.checkBox.setChecked(isChecked.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return data.length;
+        return data.size();
     }
 
     public class ListViewHolder extends RecyclerView.ViewHolder {
