@@ -15,10 +15,6 @@ public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnA
         setContentView(R.layout.activity_main);
     }
 
-    public void onMyListClick(View view){
-        Intent switchActivity = new Intent(MainActivity.this, todoList.class);
-        MainActivity.this.startActivity(switchActivity);
-    }
 
     public void signInClick(View view){
         FireBaseSetUp.getInstance().authenticate(this,this);
@@ -29,9 +25,23 @@ public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnA
         FireBaseSetUp.getInstance().authenticate(this,this);
     }
 
+    public void newListClick(View view){
+        FireBaseSetUp.getInstance().authenticate(this,this);
+        FireBaseSetUp.getInstance().createNewList("testListNameFromApp", docID -> {
+            Intent switchActivity = new Intent(MainActivity.this, todoList.class);
+            MainActivity.this.startActivity(switchActivity);
+        });
+    }
+    public void joinListClick(View view){
+        FireBaseSetUp.getInstance().joinList("jz32gfnAMoCqRVomFHfe",docID -> {
+            Intent switchActivity = new Intent(MainActivity.this, todoList.class);
+            MainActivity.this.startActivity(switchActivity);
+        });
+    }
+
 
     @Override
     public void onAuthenticated(boolean success, String message) {
-        Log.d("myAUTH", "onAuthenticated: " + success);
+        Log.d("FBSU-AU", "onAuthenticated: " + success);
     }
 }

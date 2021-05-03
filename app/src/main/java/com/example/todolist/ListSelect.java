@@ -23,9 +23,9 @@ public class ListSelect extends AppCompatActivity implements FireBaseSetUp.neste
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_select);
         recyclerView = findViewById(R.id.listSelectRecyclerView);
-        nestedList= new ArrayList<>();
-        parentList = new ArrayList<>();
-        FireBaseSetUp.getInstance().getListSelect(this, this,this);
+        nestedList= FireBaseSetUp.getInstance().returnUsersList();
+        parentList = FireBaseSetUp.getInstance().returnUsersDocs();
+        setRecyclerViewContent();
     }
 
     @Override

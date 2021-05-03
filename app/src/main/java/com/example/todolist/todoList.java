@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +25,8 @@ public class todoList extends AppCompatActivity implements FireBaseSetUp.todoCal
         recyclerView = findViewById(R.id.todoListRecyclerView);
         itemChecks = new ArrayList<>();
         itemNames = new ArrayList<>();
+        TextView listNameView = findViewById(R.id.listName);
+        listNameView.setText(FireBaseSetUp.currentListName);
 
 /*        String[] testStrings = getResources().getStringArray(R.array.test_list);
         int[] intArray = getResources().getIntArray(R.array.isChecked);
