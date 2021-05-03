@@ -1,13 +1,14 @@
 <resources>
     <string name="app_name">ToDoList</string>
     <string name="sign_in">Sign in</string>
-    <string name="create_account">Create Account</string>
-    <string name="email">email</string>
-    <string name="password">password</string>
-    <string name="need_account">Need Account</string>
+    <string name="create_account">Create account</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="need_account">Need account?</string>
     <string name="add_item">Enter name of item</string>
     <string name="sample_item">Sample item</string>
     <string name="add_positive">Add to list</string>
     <string name="add_negative">Cancel</string>
-    <string name="add_title">Add New Item</string>
+    <string name="add_title">Add new item</string>
+    <string name="have_account">Have account?</string>
 </resources>

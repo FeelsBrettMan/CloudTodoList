@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnAuthenticatedListener {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,26 +19,49 @@ public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnA
 
 
     public void signInClick(View view){
-        FireBaseSetUp.getInstance().authenticate(this,this);
-        Intent switchActivity = new Intent(MainActivity.this, ListSelect.class);
-        MainActivity.this.startActivity(switchActivity);
+        if(FireBaseSetUp.getInstance().isSignedIn()) {
+            Intent switchActivity = new Intent(MainActivity.this, ListSelect.class);
+            MainActivity.this.startActivity(switchActivity);
+        }
+        else {
+            Intent switchActivity = new Intent(MainActivity.this, Login.class);
+            MainActivity.this.startActivity(switchActivity);
+        }
     }
-    public void logIt(View view){
-        FireBaseSetUp.getInstance().authenticate(this,this);
+    public void logIt(View view) {
+        if (FireBaseSetUp.getInstance().isSignedIn()) {
+            Toast.makeText(this,"Already signed in!", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Intent switchActivity = new Intent(MainActivity.this, Login.class);
+            MainActivity.this.startActivity(switchActivity);
+        }
+
     }
 
     public void newListClick(View view){
-        FireBaseSetUp.getInstance().authenticate(this,this);
-        FireBaseSetUp.getInstance().createNewList("testListNameFromApp", docID -> {
-            Intent switchActivity = new Intent(MainActivity.this, todoList.class);
+        if(FireBaseSetUp.getInstance().isSignedIn()){
+            FireBaseSetUp.getInstance().createNewList("testListNameFromApp", docID -> {
+                        Intent switchActivity = new Intent(MainActivity.this, todoList.class);
+                        MainActivity.this.startActivity(switchActivity);
+            });
+        }
+        else {
+            Intent switchActivity = new Intent(MainActivity.this, Login.class);
             MainActivity.this.startActivity(switchActivity);
-        });
+        }
     }
     public void joinListClick(View view){
-        FireBaseSetUp.getInstance().joinList("jz32gfnAMoCqRVomFHfe",docID -> {
-            Intent switchActivity = new Intent(MainActivity.this, todoList.class);
+        if(FireBaseSetUp.getInstance().isSignedIn()){
+            FireBaseSetUp.getInstance().joinList("jz32gfnAMoCqRVomFHfe",docID -> {
+                Intent switchActivity = new Intent(MainActivity.this, todoList.class);
+                MainActivity.this.startActivity(switchActivity);
+            });
+        }
+        else {
+            Intent switchActivity = new Intent(MainActivity.this, Login.class);
             MainActivity.this.startActivity(switchActivity);
-        });
+        }
     }
 
 

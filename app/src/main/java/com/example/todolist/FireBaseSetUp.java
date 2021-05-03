@@ -34,7 +34,7 @@ public class FireBaseSetUp {
     }
     public interface TodoCallback{
         void getElements(String itemName, Boolean isDone, String itemID);
-        void getChanged(String itemName, Boolean isDone, String itemID);
+        void getChanged(String itemName, Boolean isDone, String itemID, String changeType);
     }
     public interface ListDocCallback{
         void getDocID(String docID);
@@ -56,14 +56,17 @@ public class FireBaseSetUp {
         }
         return instance;
     }
+    public boolean isSignedIn(){
+        return user != null;
+    }
 
-    public void authenticate(Activity activity, final OnAuthenticatedListener listener) {
+    public void authenticate(Activity activity, final OnAuthenticatedListener listener, String email, String password) {
         if (user == null) {
             db = FirebaseFirestore.getInstance();
             usersList = new ArrayList<>();
             usersDocs = new ArrayList<>();
             final FirebaseAuth auth = FirebaseAuth.getInstance();
-            auth.signInWithEmailAndPassword("bkreiser98@gmail.com","password")
+            auth.signInWithEmailAndPassword(email,password)
                     .addOnCompleteListener(activity, task -> {
                         if (task.isSuccessful()) {
                             user = auth.getCurrentUser();
@@ -72,11 +75,24 @@ public class FireBaseSetUp {
                                 usersList.add(nested);
                                 usersDocs.add(parentDoc);
                             });
+                            Intent intent = new Intent(activity, MainActivity.class);
+                            activity.startActivity(intent);
                         } else {
                             listener.onAuthenticated(false, null);
                         }
                     });
         }
+    }
+    public void createNewAccount(Activity activity, final OnAuthenticatedListener listener, String email, String password){
+        final FirebaseAuth auth = FirebaseAuth.getInstance();
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                authenticate(activity, listener, email, password);
+            }
+            else{
+                Log.d(TAG, "createNewAccount: FAILED!");
+            }
+        });
     }
     public  void getUsersList(NestedCallback listener){
         db.collection(mainCollection).get().addOnCompleteListener(task -> {
@@ -199,13 +215,17 @@ public class FireBaseSetUp {
                 List<DocumentChange> changes =snapshot.getDocumentChanges();
                 Log.d(TAG, "setCollectionListener: " + changes);
                 for (DocumentChange change : changes) {
-                    Log.d(TAG, "setCollectionListener: " + change.getDocument().getId());
-                    listener.getChanged((String)change.getDocument().get("itemName"), (Boolean) change.getDocument().get("isDone"), change.getDocument().getId());
+                    Log.d(TAG, "setCollectionListener: " + change.getDocument().getId()+ " " +(String)change.getDocument().get("itemName")+ " " +(Boolean) change.getDocument().get("isDone")+ " " + change.getType()) ;
+                    listener.getChanged((String)change.getDocument().get("itemName"), (Boolean) change.getDocument().get("isDone"), change.getDocument().getId(), change.getType().toString());
+                    ;
 
                 }
 
             }
         });
+    }
+    public void deleteItemOnCurrent(String itemID){
+        db.collection(mainCollection).document(currentDoc).collection(currentListName).document(itemID).delete();
     }
 }
 

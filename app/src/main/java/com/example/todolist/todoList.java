@@ -1,6 +1,7 @@
 package com.example.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,17 +11,20 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firestore.v1.DocumentChange;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class todoList extends AppCompatActivity implements FireBaseSetUp.TodoCallback, AddDialog.ButtonClickListener  {
+public class todoList extends AppCompatActivity implements FireBaseSetUp.TodoCallback, AddDialog.ButtonClickListener, todoListAdapter.DeleteItemListener  {
     String TAG = "TODO";
     RecyclerView recyclerView;
     List<String> itemNames;
     List<Boolean> itemChecks;
     List<String> itemIDs;
+    private boolean itemDeleted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,32 +62,36 @@ public class todoList extends AppCompatActivity implements FireBaseSetUp.TodoCal
     }
 
     @Override
-    public void getChanged(String itemName, Boolean isDone, String itemID) {
-        boolean updated = false;
-        boolean newItem = true;
-        int position = 0;
-        for(int i=0; i<itemIDs.size();i++){
-            if(itemIDs.get(i).equals(itemID)){
-                newItem = false;
-                if(itemChecks.get(i) != isDone || itemNames.get(i).equals(itemName)){
-                    updated = true; position = i;
-                    itemChecks.set(i, isDone); itemNames.set(i, itemName);
-                }
-            }
-        }
-        if(updated){
-            recyclerView.getAdapter().notifyItemChanged(position);
-        }
-        else if(newItem) {
-            itemIDs.add(itemID); itemNames.add(itemName); itemChecks.add(isDone);
-            recyclerView.getAdapter().notifyItemInserted(itemIDs.size());
-        }
+    public void getChanged(String itemName, Boolean isDone, String itemID, String changeType) {
+        switch (changeType){
+            case "MODIFIED":
+                for (int i = 0; i < itemIDs.size(); i++) {
+                    if (itemIDs.get(i).equals(itemID)) {
+                        itemChecks.set(i, isDone);
+                        itemNames.set(i, itemName);
+                        recyclerView.getAdapter().notifyItemChanged(i);
+                        return;
+                    }
 
+                }
+            case "ADDED":
+                if(itemIDs.contains(itemID)) return;
+                itemIDs.add(itemID); itemNames.add(itemName); itemChecks.add(isDone);
+                recyclerView.getAdapter().notifyItemInserted(itemIDs.size());
+                return;
+            case "REMOVED":
+                for (int i = 0; i < itemIDs.size(); i++) {
+                    if (itemIDs.get(i).equals(itemID)) {
+                        itemIDs.remove(itemID); itemNames.remove(itemName); itemChecks.remove(isDone);
+                        recyclerView.getAdapter().notifyItemRemoved(i);
+                    }
+                }
+        }
     }
 
     public void setRecyclerViewContent(){
         Log.d("TAG", "setRecyclerViewContent: " + itemNames);
-        todoListAdapter todoListAdapter = new todoListAdapter( this, itemNames, itemChecks,itemIDs);
+        todoListAdapter todoListAdapter = new todoListAdapter( this, itemNames, itemChecks, itemIDs, this);
         recyclerView.setAdapter(todoListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -103,5 +111,11 @@ public class todoList extends AppCompatActivity implements FireBaseSetUp.TodoCal
         else{
             Log.d(TAG, "onButtonClick: canceled");
         }
+    }
+
+    @Override
+    public void deleteItem(int position) {
+        FireBaseSetUp.getInstance().deleteItemOnCurrent(itemIDs.get(position));
+        Snackbar.make(findViewById(R.id.myCoordinator), "Item deleted!", Snackbar.LENGTH_LONG ).show();
     }
 }

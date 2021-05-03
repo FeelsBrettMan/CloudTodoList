@@ -18,11 +18,13 @@ public class todoListAdapter extends RecyclerView.Adapter<todoListAdapter.ListVi
     List<String> data;
     List<Boolean> isChecked;
     List<String> itemIDs;
-    public todoListAdapter(Context context, List<String > data, List<Boolean> isChecked, List<String> itemIDs){
+    DeleteItemListener listener;
+    public todoListAdapter(Context context, List<String > data, List<Boolean> isChecked, List<String> itemIDs, DeleteItemListener listener){
         this.context = context;
         this.data= data;
         this.isChecked = isChecked;
         this.itemIDs = itemIDs;
+        this.listener = listener;
     }
 
 
@@ -31,7 +33,7 @@ public class todoListAdapter extends RecyclerView.Adapter<todoListAdapter.ListVi
     public ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.list_element,parent,false);
-        return new ListViewHolder(view);
+        return new ListViewHolder(view, listener);
     }
 
     @Override
@@ -52,14 +54,27 @@ public class todoListAdapter extends RecyclerView.Adapter<todoListAdapter.ListVi
         return data.size();
     }
 
-    public class ListViewHolder extends RecyclerView.ViewHolder {
+    public class ListViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         TextView textTodo;
         CheckBox checkBox;
+        DeleteItemListener listener;
 
-        public ListViewHolder(@NonNull View itemView) {
+        public ListViewHolder(@NonNull View itemView, DeleteItemListener listener) {
             super(itemView);
+            this.listener = listener;
             textTodo = itemView.findViewById(R.id.textItemName);
             checkBox = itemView.findViewById(R.id.checkBox);
+            itemView.setOnLongClickListener(this);
         }
+
+        @Override
+        public boolean onLongClick(View view) {
+            listener.deleteItem(getAdapterPosition());
+            Log.d("TAG", "onLongClick: " + getAdapterPosition());
+            return true;
+        }
+    }
+    public interface DeleteItemListener{
+        void deleteItem(int position);
     }
 }
