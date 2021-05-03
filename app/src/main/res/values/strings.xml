@@ -5,4 +5,9 @@
     <string name="email">email</string>
     <string name="password">password</string>
     <string name="need_account">Need Account</string>
+    <string name="add_item">Enter name of item</string>
+    <string name="sample_item">Sample item</string>
+    <string name="add_positive">Add to list</string>
+    <string name="add_negative">Cancel</string>
+    <string name="add_title">Add New Item</string>
 </resources>

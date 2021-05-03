@@ -1,6 +1,7 @@
 package com.example.todolist;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,12 @@ public class todoListAdapter extends RecyclerView.Adapter<todoListAdapter.ListVi
     Context context;
     List<String> data;
     List<Boolean> isChecked;
-    public todoListAdapter(Context context, List<String > data, List<Boolean> isChecked){
+    List<String> itemIDs;
+    public todoListAdapter(Context context, List<String > data, List<Boolean> isChecked, List<String> itemIDs){
         this.context = context;
         this.data= data;
         this.isChecked = isChecked;
+        this.itemIDs = itemIDs;
     }
 
 
@@ -35,6 +38,13 @@ public class todoListAdapter extends RecyclerView.Adapter<todoListAdapter.ListVi
     public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         holder.textTodo.setText(data.get(position));
         holder.checkBox.setChecked(isChecked.get(position));
+        holder.checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("ADAPT", "onClick: ");
+                FireBaseSetUp.getInstance().checkItemOnCurrent(itemIDs.get(position), holder.checkBox.isChecked());
+            }
+        });
     }
 
     @Override

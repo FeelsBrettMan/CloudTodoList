@@ -12,7 +12,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListSelect extends AppCompatActivity implements FireBaseSetUp.nestedCallback {
+public class ListSelect extends AppCompatActivity implements FireBaseSetUp.NestedCallback {
     private String TAG = "LS";
     RecyclerView recyclerView;
     List<String> nestedList;

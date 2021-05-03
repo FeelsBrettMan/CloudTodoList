@@ -8,26 +8,35 @@ import android.widget.ArrayAdapter;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 public class FireBaseSetUp {
     private static final String TAG = "FBSU";
     public interface OnAuthenticatedListener{
         void onAuthenticated(boolean success, String message);
     }
-    public interface nestedCallback{
+    public interface NestedCallback{
         void getNested(String nested, String parentDoc);
     }
-    public interface todoCallback{
-        void getElements(String itemName, Boolean isDone);
+    public interface TodoCallback{
+        void getElements(String itemName, Boolean isDone, String itemID);
+        void getChanged(String itemName, Boolean isDone, String itemID);
     }
-    public interface listDocCallback{
+    public interface ListDocCallback{
         void getDocID(String docID);
     }
 
@@ -40,7 +49,6 @@ public class FireBaseSetUp {
 
     private static String currentDoc;
     public static String currentListName;
-
 
     public static synchronized FireBaseSetUp getInstance(){
         if(instance == null){
@@ -70,7 +78,7 @@ public class FireBaseSetUp {
                     });
         }
     }
-    public  void getUsersList(nestedCallback listener){
+    public  void getUsersList(NestedCallback listener){
         db.collection(mainCollection).get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 List<DocumentSnapshot> docs = task.getResult().getDocuments();
@@ -101,7 +109,7 @@ public class FireBaseSetUp {
         currentListName = listName;
     }
 
-    public void getTodoList(final todoCallback listener, todoList callingClass){
+    public void getTodoList(final TodoCallback listener, todoList callingClass, ListDocCallback docListener){
         Log.d(TAG, "getTodoList: " + currentDoc + currentListName);
         if(currentDoc==null){
             Log.d(TAG, "getTodoList: currentDoc is null");
@@ -115,16 +123,16 @@ public class FireBaseSetUp {
                    Log.d(TAG, "getTodoList: " + current.getString("itemName"));
                    Log.d(TAG, "getTodoList: "+ current.getBoolean("isDone"));
                    Log.d(TAG, "getTodoList: "+ current.getData());
-                   listener.getElements(current.getString("itemName"), current.getBoolean("isDone"));
+                   listener.getElements(current.getString("itemName"), current.getBoolean("isDone"), current.getId());
                });
-               callingClass.setRecyclerViewContent();
+               docListener.getDocID(currentDoc);
            }
            else {
                Log.d(TAG, "getTodoList: FAILED!");
            }
         });
     }
-    public void createNewList(String listName, listDocCallback listener){
+    public void createNewList(String listName, ListDocCallback listener){
         Map<String, Object > map = new HashMap<>();
         ArrayList<String> usersList = new ArrayList<>();
         usersList.add(user.getUid());
@@ -148,7 +156,7 @@ public class FireBaseSetUp {
             }
         });
     }
-    public void joinList(String docID, listDocCallback listener){
+    public void joinList(String docID, ListDocCallback listener){
         db.collection(mainCollection).document(docID).get().addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 Map<String, Object> map = task.getResult().getData();
@@ -158,6 +166,44 @@ public class FireBaseSetUp {
                 db.collection(mainCollection).document(docID).set(map);
                 FireBaseSetUp.setCurrents(docID, (String) map.get("nested"));
                 listener.getDocID(docID);
+            }
+        });
+    }
+    public void addItemToCurrent(String itemName){
+        Map<String, Object> map = new HashMap<>();
+        map.put("itemName", itemName);
+        map.put("isDone", false);
+        db.collection(mainCollection).document(currentDoc).collection(currentListName).add(map);
+    }
+    public void checkItemOnCurrent(String itemID, boolean isChecked){
+        Map<String, Object> map = new HashMap<>();
+        map.put("isDone", isChecked);
+        db.collection(mainCollection).document(currentDoc).collection(currentListName).document(itemID).set(map, SetOptions.merge()).addOnCompleteListener(task -> {
+            if(task.isSuccessful()){
+                Log.d(TAG, "checkItemOnCurrent: updated check");
+            }
+            else{
+                Log.d(TAG, "checkItemOnCurrent: check update failed");
+            }
+        });
+    }
+
+    public void setCollectionListener(TodoCallback listener){
+        Log.d(TAG, "setCollectionListener: setting!");
+        db.collection(mainCollection).document(currentDoc).collection(currentListName).addSnapshotListener((@Nullable QuerySnapshot snapshot, FirebaseFirestoreException e) ->{
+            if(e!=null){
+                Log.w(TAG,"Listen Failed: ", e);
+                return;
+            }
+            if(snapshot!=null){
+                List<DocumentChange> changes =snapshot.getDocumentChanges();
+                Log.d(TAG, "setCollectionListener: " + changes);
+                for (DocumentChange change : changes) {
+                    Log.d(TAG, "setCollectionListener: " + change.getDocument().getId());
+                    listener.getChanged((String)change.getDocument().get("itemName"), (Boolean) change.getDocument().get("isDone"), change.getDocument().getId());
+
+                }
+
             }
         });
     }
