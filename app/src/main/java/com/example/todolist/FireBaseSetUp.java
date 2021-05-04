@@ -163,6 +163,9 @@ public class FireBaseSetUp {
                     if(task1.isSuccessful()){
                         Log.d(TAG, "createNewList: List created!");
                         FireBaseSetUp.setCurrents(task.getResult().getId(),listName);
+                        this.usersList.add(listName);
+                        usersDocs.add(task.getResult().getId());
+                        Log.d(TAG, "createNewList: "+ usersList);
                         listener.getDocID(currentDoc);
                     }
                     else {

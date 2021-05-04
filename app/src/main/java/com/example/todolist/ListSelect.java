@@ -19,20 +19,17 @@ public class ListSelect extends AppCompatActivity implements FireBaseSetUp.Neste
     RecyclerView recyclerView;
     ArrayList<String> nestedList;
     ArrayList<String> parentList;
+    ListSelectAdapter listSelectAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_select);
         recyclerView = findViewById(R.id.listSelectRecyclerView);
-        if(savedInstanceState==null) {
             nestedList = FireBaseSetUp.getInstance().returnUsersList();
             parentList = FireBaseSetUp.getInstance().returnUsersDocs();
-        }
-        else{
-            nestedList = savedInstanceState.getStringArrayList("listnames");
-            parentList = savedInstanceState.getStringArrayList("docNames");
-        }
+            listSelectAdapter = new ListSelectAdapter(this, nestedList, parentList);
+
         setRecyclerViewContent();
         Log.d(TAG, "onCreate: " + nestedList);
     }
@@ -45,7 +42,6 @@ public class ListSelect extends AppCompatActivity implements FireBaseSetUp.Neste
 
     public void setRecyclerViewContent(){
         Log.d(TAG, "setRecyclerViewContent: " + nestedList);
-        ListSelectAdapter listSelectAdapter = new ListSelectAdapter(this, nestedList, parentList);
         recyclerView.setAdapter(listSelectAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
