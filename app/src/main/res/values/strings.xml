@@ -11,4 +11,11 @@
     <string name="add_negative">Cancel</string>
     <string name="add_title">Add new item</string>
     <string name="have_account">Have account?</string>
+    <string name="enter_list_id">Enter list ID</string>
+    <string name="join_list_name">Join existing list</string>
+    <string name="add_list_name">Create new list</string>
+    <string name="new_list">Enter list name</string>
+    <string name="new_list_positive">Create list</string>
+    <string name="join_list_positive">Join list</string>
+    <string name="share_list_button">Share list</string>
 </resources>

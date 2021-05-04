@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnAuthenticatedListener {
+public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnAuthenticatedListener, JoinListDialog.ButtonClickListener, NewListDialog.ButtonClickListener {
 
 
     @Override
@@ -28,23 +28,12 @@ public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnA
             MainActivity.this.startActivity(switchActivity);
         }
     }
-    public void logIt(View view) {
-        if (FireBaseSetUp.getInstance().isSignedIn()) {
-            Toast.makeText(this,"Already signed in!", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            Intent switchActivity = new Intent(MainActivity.this, Login.class);
-            MainActivity.this.startActivity(switchActivity);
-        }
 
-    }
 
     public void newListClick(View view){
         if(FireBaseSetUp.getInstance().isSignedIn()){
-            FireBaseSetUp.getInstance().createNewList("testListNameFromApp", docID -> {
-                        Intent switchActivity = new Intent(MainActivity.this, todoList.class);
-                        MainActivity.this.startActivity(switchActivity);
-            });
+            NewListDialog newListDialog = new NewListDialog();
+            newListDialog.show(getSupportFragmentManager(), "newListDialog");
         }
         else {
             Intent switchActivity = new Intent(MainActivity.this, Login.class);
@@ -53,10 +42,8 @@ public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnA
     }
     public void joinListClick(View view){
         if(FireBaseSetUp.getInstance().isSignedIn()){
-            FireBaseSetUp.getInstance().joinList("jz32gfnAMoCqRVomFHfe",docID -> {
-                Intent switchActivity = new Intent(MainActivity.this, todoList.class);
-                MainActivity.this.startActivity(switchActivity);
-            });
+            JoinListDialog joinListDialog = new JoinListDialog();
+            joinListDialog.show(getSupportFragmentManager(),"joinListDialog");
         }
         else {
             Intent switchActivity = new Intent(MainActivity.this, Login.class);
@@ -68,5 +55,31 @@ public class MainActivity extends AppCompatActivity implements FireBaseSetUp.OnA
     @Override
     public void onAuthenticated(boolean success, String message) {
         Log.d("FBSU-AU", "onAuthenticated: " + success);
+    }
+
+    @Override
+    public void onButtonClick(boolean button, String listID) {
+        if(button){
+            FireBaseSetUp.getInstance().joinList(listID, docID -> {
+                Intent switchActivity = new Intent(MainActivity.this, todoList.class);
+                MainActivity.this.startActivity(switchActivity);
+            });
+        }
+        else{
+            Log.e("MAIN", "onButtonClick: Failed to join list");
+        }
+    }
+
+    @Override
+    public void onNewButtonClick(boolean button, String listName) {
+        if(button){
+            FireBaseSetUp.getInstance().createNewList(listName, docID -> {
+                Intent switchActivity = new Intent(MainActivity.this, todoList.class);
+                MainActivity.this.startActivity(switchActivity);
+            });
+        }
+        else{
+            Log.e("MAIN", "onButtonClick: Failed to join list");
+        }
     }
 }

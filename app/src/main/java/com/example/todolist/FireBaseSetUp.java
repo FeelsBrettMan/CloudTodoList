@@ -43,7 +43,7 @@ public class FireBaseSetUp {
     private static FireBaseSetUp instance;
     private FirebaseUser user;
     private FirebaseFirestore db;
-    private String mainCollection = "listIDs";
+    private final String mainCollection = "listIDs";
     private ArrayList<String> usersList;
     private ArrayList<String> usersDocs;
 
@@ -70,7 +70,7 @@ public class FireBaseSetUp {
                     .addOnCompleteListener(activity, task -> {
                         if (task.isSuccessful()) {
                             user = auth.getCurrentUser();
-                            listener.onAuthenticated(true, "Logged in with id: " + user.getUid());
+                            listener.onAuthenticated(true, "Login successful!");
                             getUsersList((nested, parentDoc) -> {
                                 usersList.add(nested);
                                 usersDocs.add(parentDoc);
@@ -78,7 +78,7 @@ public class FireBaseSetUp {
                             Intent intent = new Intent(activity, MainActivity.class);
                             activity.startActivity(intent);
                         } else {
-                            listener.onAuthenticated(false, null);
+                            listener.onAuthenticated(false, "Login failed! Check credentials. ");
                         }
                     });
         }
@@ -181,6 +181,8 @@ public class FireBaseSetUp {
                 map.put("Users", userList);
                 db.collection(mainCollection).document(docID).set(map);
                 FireBaseSetUp.setCurrents(docID, (String) map.get("nested"));
+                usersList.add((String)map.get("nested"));
+                usersDocs.add(docID);
                 listener.getDocID(docID);
             }
         });

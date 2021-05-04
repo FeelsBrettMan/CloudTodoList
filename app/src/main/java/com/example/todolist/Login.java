@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class Login extends AppCompatActivity {
     EditText email, password;
@@ -26,7 +27,9 @@ public class Login extends AppCompatActivity {
     }
 
     public void signInClick(View view){
-        FireBaseSetUp.getInstance().authenticate(this, (boolean success, String message)->{}, email.getText().toString(), password.getText().toString());
+        FireBaseSetUp.getInstance().authenticate(this, (boolean success, String message)->{
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show(); },
+                email.getText().toString(), password.getText().toString());
     }
     public  void createAccount(View view){
         Intent switchActivity = new Intent(Login.this, createAccount.class);

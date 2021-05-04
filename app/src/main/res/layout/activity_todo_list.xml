@@ -13,12 +13,12 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/editList"
+            android:id="@+id/share_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="Edit List Details"
+            android:text="@string/share_list_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +53,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:maxImageSize="50dp"
-            app:srcCompat="@android:drawable/ic_menu_add" />
+            app:srcCompat="@android:drawable/ic_menu_add"
+            android:contentDescription="@string/add_title" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
